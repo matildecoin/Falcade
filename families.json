@@ -1,0 +1,9 @@
+{
+  "beds": 9,
+  "families": [
+    {"id": "a", "name": "Family A", "color": "#2e7d5b", "members": ["Anna", "Marco", "Luca"]},
+    {"id": "b", "name": "Family B", "color": "#2f7fb5", "members": ["Sofia", "Paolo", "Elena"]},
+    {"id": "c", "name": "Family C", "color": "#c07f12", "members": ["Giulia", "Mattia"]},
+    {"id": "d", "name": "Family D", "color": "#9b3d6e", "members": ["Chiara"]}
+  ]
+}

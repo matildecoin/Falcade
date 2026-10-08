@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mountain house calendar</title>
+<style>
+:root{--bg:#f1f5f6;--ink:#1c2a31;--mute:#5b6d77;--line:#d3dde1;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#131b20;--ink:#e5eef1;--mute:#8da1ac;--line:#2a3940;--card:#1a252b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+main{max-width:1020px;margin:0 auto;padding:20px 12px 60px}
+h1,h2{font-family:Georgia,serif;margin:0}
+h1{font-size:1.9rem}h2{font-size:1.25rem;margin:28px 0 8px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+nav{display:flex;gap:8px;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 14px;cursor:pointer}
+button:focus-visible{outline:3px solid #2f7fb5;outline-offset:2px}
+#title{min-width:11ch;text-align:center;font-weight:600;text-transform:capitalize}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--mute);margin-bottom:12px}
+.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:6px}
+#grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dow{background:var(--card);padding:6px;text-align:center;color:var(--mute);font-size:.85rem}
+.cell{background:var(--card);min-height:96px;padding:4px;display:flex;flex-direction:column;gap:2px}
+.cell.full{background:color-mix(in srgb,var(--card) 88%,#c0392b)}
+.cell b{font-size:.85rem}
+.cell small{margin-top:auto;color:var(--mute);font-size:.72rem}
+.chip{color:#fff;border-radius:4px;padding:1px 5px;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table{border-collapse:collapse;width:100%;background:var(--card);border-radius:10px;overflow:hidden}
+td,th{padding:7px 12px;text-align:left;border-bottom:1px solid var(--line)}
+td:last-child,th:last-child{text-align:right}
+a{color:inherit}
+@media(max-width:560px){.cell{min-height:70px}.chip{font-size:.65rem;padding:0 3px}}
+</style>
+<main>
+<header><h1>The mountain house</h1>
+<nav><button id="prev" aria-label="Previous month">&lt;</button><span id="title"></span><button id="next" aria-label="Next month">&gt;</button></nav></header>
+<div class="legend" id="legend"></div>
+<div id="grid"></div>
+<p><a href="../../issues/new?template=booking.yml">Request beds</a></p>
+<h2 id="ctitle"></h2><table id="counts"></table>
+</main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let data,cur=new Date();cur.setDate(1);
+fetch('data.json').then(r=>r.json()).then(d=>{data=d;
+  $('#legend').innerHTML=d.families.map(f=>`<span><i class=dot style="background:${f.color}"></i>${esc(f.name)}</span>`).join('');draw()});
+$('#prev').onclick=()=>{cur.setMonth(cur.getMonth()-1);draw()};
+$('#next').onclick=()=>{cur.setMonth(cur.getMonth()+1);draw()};
+const fam=m=>data.families.find(f=>f.members.includes(m));
+function nights(b,y){let n=0;for(let d=new Date(b.start+'T00:00');fmt(d)<b.end;d.setDate(d.getDate()+1))if(d.getFullYear()==y)n++;return n}
+function draw(){
+  const y=cur.getFullYear(),m=cur.getMonth(),lead=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate();
+  $('#title').textContent=cur.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  let h=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class=dow>${d}</div>`).join('')+'<div class=cell style="background:var(--bg)"></div>'.repeat(lead);
+  for(let d=1;d<=days;d++){
+    const k=fmt(new Date(y,m,d)),bs=data.bookings.filter(b=>b.start<=k&&k<b.end),used=bs.reduce((s,b)=>s+b.beds,0);
+    h+=`<div class="cell${used>=data.beds?' full':''}"><b>${d}</b>`+bs.map(b=>`<span class=chip title="${esc(b.member)}: ${b.beds} beds" style="background:${fam(b.member).color}">${esc(b.member)} ${b.beds}</span>`).join('')+`<small>${used>=data.beds?'full':data.beds-used+' free'}</small></div>`}
+  $('#grid').innerHTML=h;
+  $('#ctitle').textContent=`Nights booked in ${y}`;
+  let rows='';for(const f of data.families){
+    const per=f.members.map(n=>[n,data.bookings.filter(b=>b.member==n).reduce((s,b)=>s+nights(b,y),0)]);
+    rows+=`<tr><th><i class=dot style="background:${f.color}"></i>${esc(f.name)}</th><th>${per.reduce((s,p)=>s+p[1],0)}</th></tr>`+per.map(p=>`<tr><td>${esc(p[0])}</td><td>${p[1]}</td></tr>`).join('')}
+  $('#counts').innerHTML=rows}
+</script>
+</html>

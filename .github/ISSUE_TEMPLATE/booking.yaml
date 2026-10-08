@@ -1,0 +1,24 @@
+name: Book the house
+description: Request beds for some dates
+labels: [booking]
+body:
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who are you?
+      options: [Anna, Marco, Luca, Sofia, Paolo, Elena, Giulia, Mattia, Chiara]
+    validations: {required: true}
+  - type: input
+    id: start
+    attributes: {label: "Arrival date (YYYY-MM-DD)", placeholder: "2026-12-20"}
+    validations: {required: true}
+  - type: input
+    id: end
+    attributes: {label: "Departure date (YYYY-MM-DD)", placeholder: "2026-12-27"}
+    validations: {required: true}
+  - type: dropdown
+    id: beds
+    attributes:
+      label: Beds needed
+      options: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    validations: {required: true}

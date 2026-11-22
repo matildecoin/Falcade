@@ -5,7 +5,7 @@
     {"id": "room1-us", "name": "Room 1 - upstairs", "spots": 1}
   ],
   "famiglie": [
-    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Mara", "James", "Matilde"], "approval_users": ["JakobSchyga"]},
+    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Mara", "James", "Matilde"], "approval_users": ["jakobschyga"]},
     {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Sara", "Jakob", "Ilenia"], "approval_users": ["matildecoin"]}
     ]
 }

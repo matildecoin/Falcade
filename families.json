@@ -1,12 +1,11 @@
 {
   "rooms": [
-    {"id": "room1-ds", "name": "Room 1 - downstairs", "spots": 2},
+    {"id": "room1-ds", "name": "Room 1 - downstairs", "spots": 5},
     {"id": "room2-ds", "name": "Room 2 - downstairs", "spots": 3},
-    {"id": "room1-us", "name": "Room 1 - upstairs", "spots": 2},
-    {"id": "room2-us", "name": "Room 2 - upstairs", "spots": 2}
+    {"id": "room1-us", "name": "Room 1 - upstairs", "spots": 1}
   ],
   "famiglie": [
-    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Marina", "Franco", "Matilde"], "approval_users": ["JakobSchyga"]},
-    {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"], "approval_users": ["matildecoin"]}
+    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Mara", "James", "Matilde"], "approval_users": ["JakobSchyga"]},
+    {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Sara", "Jakob", "Ilenia"], "approval_users": ["matildecoin"]}
     ]
 }

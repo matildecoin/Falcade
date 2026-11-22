@@ -1,9 +1,9 @@
 {
-  "beds": 9,
-  "families": [
-    {"id": "a", "name": "Family A", "color": "#2e7d5b", "members": ["Anna", "Marco", "Luca"]},
-    {"id": "b", "name": "Family B", "color": "#2f7fb5", "members": ["Sofia", "Paolo", "Elena"]},
-    {"id": "c", "name": "Family C", "color": "#c07f12", "members": ["Giulia", "Mattia"]},
-    {"id": "d", "name": "Family D", "color": "#9b3d6e", "members": ["Chiara"]}
+  "letti": 9,
+  "famiglie": [
+    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Marina", "Franco", "Matilde"]},
+    {"id": "t", "name": "Famiglia Tommy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"]},
+    {"id": "s", "name": "Famiglia Stefy", "color": "#c07f12", "members": ["Tommy", "Pia", "Ida", "Eva"]},
+    {"id": "f", "name": "Famiglia Foscara", "color": "#9b3d6e", "members": ["Foscara", "Beppe"]}
   ]
 }

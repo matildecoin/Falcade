@@ -1,9 +1,14 @@
 {
-  "letti": 9,
+  "rooms": [
+    {"id": "room1-ds", "name": "Room 1 - downstairs", "spots": 2},
+    {"id": "room2-ds", "name": "Room 2 - downstairs", "spots": 3},
+    {"id": "room1-us", "name": "Room 1 - upstairs", "spots": 2},
+    {"id": "room2-us", "name": "Room 2 - upstairs", "spots": 2}
+  ],
   "famiglie": [
-    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Marina", "Franco", "Matilde"]},
-    {"id": "t", "name": "Famiglia Tommy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"]},
-    {"id": "s", "name": "Famiglia Stefy", "color": "#c07f12", "members": ["Tommy", "Pia", "Ida", "Eva"]},
-    {"id": "f", "name": "Famiglia Foscara", "color": "#9b3d6e", "members": ["Foscara", "Beppe"]}
+    {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Marina", "Franco", "Matilde"], "approval_users": ["Marina"]},
+    {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"], "approval_users": ["Stefy"]},
+    {"id": "s", "name": "Famiglia Tommy", "color": "#c07f12", "members": ["Tommy", "Pia", "Ida", "Eva"], "approval_users": ["Tommy"]},
+    {"id": "f", "name": "Famiglia Foscara", "color": "#9b3d6e", "members": ["Foscara", "Beppe"], "approval_users": ["Foscara"]}
   ]
 }

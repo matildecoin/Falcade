@@ -7,8 +7,6 @@
   ],
   "famiglie": [
     {"id": "m", "name": "Famglia Marina", "color": "#2e7d5b", "members": ["Marina", "Franco", "Matilde"], "approval_users": ["JakobSchyga"]},
-    {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"], "approval_users": ["Stefy"]},
-    {"id": "s", "name": "Famiglia Tommy", "color": "#c07f12", "members": ["Tommy", "Pia", "Ida", "Eva"], "approval_users": ["Tommy"]},
-    {"id": "f", "name": "Famiglia Foscara", "color": "#9b3d6e", "members": ["Foscara", "Beppe"], "approval_users": ["Foscara"]}
-  ]
+    {"id": "t", "name": "Famiglia Stefy", "color": "#2f7fb5", "members": ["Marta", "Stefy", "Rocco"], "approval_users": ["matildecoin"]}
+    ]
 }

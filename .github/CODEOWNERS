@@ -1,2 +1,2 @@
-# One representative per family: GitHub emails them to review each request.
-/bookings/ @rep-family-a @rep-family-b @rep-family-c @rep-family-d
+# Family bookings are gated by .github/workflows/family-approvals.yml.
+# Configure each family's real GitHub reviewer logins in families.json.

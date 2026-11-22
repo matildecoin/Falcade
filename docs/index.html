@@ -1,64 +1,303 @@
-<!doctype html><html lang="en"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f6f2">
 <title>Mountain house calendar</title>
 <style>
-:root{--bg:#f1f5f6;--ink:#1c2a31;--mute:#5b6d77;--line:#d3dde1;--card:#fff}
-@media(prefers-color-scheme:dark){:root{--bg:#131b20;--ink:#e5eef1;--mute:#8da1ac;--line:#2a3940;--card:#1a252b}}
+:root{color-scheme:light dark;--bg:#f4f6f2;--ink:#20302d;--muted:#60716c;--line:#d5ded8;--card:#fff;--accent:#286b56;--soft:#e9f1ec;--danger:#a63737}
+@media(prefers-color-scheme:dark){:root{--bg:#17211e;--ink:#e7efeb;--muted:#a6b8b0;--line:#34433e;--card:#202d28;--accent:#85c3a9;--soft:#293b33;--danger:#ff9898}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
-main{max-width:1020px;margin:0 auto;padding:20px 12px 60px}
-h1,h2{font-family:Georgia,serif;margin:0}
-h1{font-size:1.9rem}h2{font-size:1.25rem;margin:28px 0 8px}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-nav{display:flex;gap:8px;align-items:center}
-button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 14px;cursor:pointer}
-button:focus-visible{outline:3px solid #2f7fb5;outline-offset:2px}
-#title{min-width:11ch;text-align:center;font-weight:600;text-transform:capitalize}
-.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--mute);margin-bottom:12px}
-.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:6px}
-#grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.dow{background:var(--card);padding:6px;text-align:center;color:var(--mute);font-size:.85rem}
-.cell{background:var(--card);min-height:96px;padding:4px;display:flex;flex-direction:column;gap:2px}
-.cell.full{background:color-mix(in srgb,var(--card) 88%,#c0392b)}
-.cell b{font-size:.85rem}
-.cell small{margin-top:auto;color:var(--mute);font-size:.72rem}
-.chip{color:#fff;border-radius:4px;padding:1px 5px;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-table{border-collapse:collapse;width:100%;background:var(--card);border-radius:10px;overflow:hidden}
-td,th{padding:7px 12px;text-align:left;border-bottom:1px solid var(--line)}
-td:last-child,th:last-child{text-align:right}
-a{color:inherit}
-@media(max-width:560px){.cell{min-height:70px}.chip{font-size:.65rem;padding:0 3px}}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 56px}
+h1,h2,h3{font-family:Georgia,serif;line-height:1.2}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);margin:0}
+h2{font-size:1.45rem;margin:0 0 12px}
+h3{font-size:1.1rem;margin:0 0 8px}
+p{margin:8px 0}
+.intro{color:var(--muted);max-width:68ch}
+header,.month-nav,.form-actions,.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header{margin-bottom:20px}
+.month-nav{justify-content:center}
+button,.button,select,input{font:inherit}
+button,.button{border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:8px 13px;cursor:pointer;text-decoration:none}
+button:hover,.button:hover{border-color:var(--accent)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #347fb3;outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:650}
+.section{margin-top:24px;padding:20px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.month-title{min-width:12ch;text-align:center;font-weight:650;text-transform:capitalize}
+.legend{display:flex;gap:12px 18px;flex-wrap:wrap;margin:12px 0;color:var(--muted)}
+.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.calendar-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));min-width:660px}
+.dow,.day{padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.dow{background:var(--soft);text-align:center;color:var(--muted);font-size:.85rem;font-weight:650}
+.day{min-height:112px;display:flex;flex-direction:column;gap:4px}
+.day:nth-child(7n){border-right:0}
+.day-number{font-weight:700}
+.day.outside{background:var(--bg);color:var(--muted)}
+.day.full{background:color-mix(in srgb,var(--card) 86%,#d44)}
+.chip{display:block;color:#fff;border-radius:4px;padding:1px 5px;font-size:.73rem;line-height:1.35;overflow-wrap:anywhere}
+.free{margin-top:auto;color:var(--muted);font-size:.75rem}
+.legend-note,.hint{color:var(--muted);font-size:.9rem}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px 16px}
+label{display:block;font-weight:600;margin-bottom:4px}
+input,select{width:100%;min-height:42px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)}
+.room-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:12px 0}
+.room-choice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.room-choice label{margin:0;flex:1}
+.room-choice select{width:76px}
+.form-actions{justify-content:flex-start;margin-top:12px}
+.result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);background:var(--soft);border-radius:4px}
+.result:empty{display:none}
+.result a{color:inherit;font-weight:650}
+.error{border-color:var(--danger)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+td.numeric,th.numeric{text-align:right}
+caption{text-align:left;font-weight:600;padding:0 10px 8px}
+.status{color:var(--muted)}
+@media(max-width:600px){main{padding:18px 10px 40px}.section{padding:15px}.day{min-height:90px;padding:5px}.chip{font-size:.66rem}.calendar{grid-template-columns:repeat(7,minmax(76px,1fr));min-width:560px}}
 </style>
+</head>
+<body>
 <main>
-<header><h1>The mountain house</h1>
-<nav><button id="prev" aria-label="Previous month">&lt;</button><span id="title"></span><button id="next" aria-label="Next month">&gt;</button></nav></header>
-<div class="legend" id="legend"></div>
-<div id="grid"></div>
-<p><a href="../../issues/new?template=booking.yml">Request beds</a></p>
-<h2 id="ctitle"></h2><table id="counts"></table>
+  <header>
+    <div>
+      <h1>The mountain house</h1>
+      <p class="intro">Check room availability, request a stay, and keep a fair count of everyone who stayed—including guests.</p>
+    </div>
+    <nav class="month-nav" aria-label="Calendar month">
+      <button id="prev" type="button" aria-label="Previous month">Previous</button>
+      <span id="month-title" class="month-title" aria-live="polite"></span>
+      <button id="next" type="button" aria-label="Next month">Next</button>
+    </nav>
+  </header>
+
+  <section aria-label="House calendar">
+    <div id="legend" class="legend"></div>
+    <p class="legend-note">A booking occupies the selected number of spots in each room, from arrival through the night before departure.</p>
+    <div class="calendar-wrap"><div id="calendar" class="calendar" aria-label="House bookings by day"></div></div>
+    <p id="load-status" class="status" role="status" aria-live="polite">Loading calendar…</p>
+  </section>
+
+  <section class="section" aria-labelledby="booking-heading">
+    <h2 id="booking-heading">Request a booking</h2>
+    <p class="hint">Choose rooms and spots that are free for every night. A booking is confirmed after one configured reviewer from each family approves it.</p>
+    <form id="booking-form">
+      <div class="form-grid">
+        <div><label for="booking-family">Family nucleus</label><select id="booking-family" required></select></div>
+        <div><label for="booking-member">Requesting member</label><select id="booking-member" required></select></div>
+        <div><label for="arrival">Arrival</label><input id="arrival" type="date" required></div>
+        <div><label for="departure">Departure</label><input id="departure" type="date" required></div>
+        <div><label for="spot-count">People-spots requested</label><input id="spot-count" type="number" min="1" value="1" required></div>
+      </div>
+      <h3 style="margin-top:16px">Choose room spots</h3>
+      <p id="availability-note" class="hint" aria-live="polite"></p>
+      <div id="room-choices" class="room-list"></div>
+      <p id="allocation-total" class="hint" aria-live="polite"></p>
+      <div class="form-actions"><button class="primary" type="submit">Prepare booking request</button></div>
+      <div id="booking-result" class="result" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section class="section" aria-labelledby="presence-heading">
+    <h2 id="presence-heading">Record a presence</h2>
+    <p class="hint">Record one stay per family nucleus per date, for today or a past date. Guests count toward the reporting family’s yearly total.</p>
+    <form id="presence-form">
+      <div class="form-grid">
+        <div><label for="presence-family">Family nucleus</label><select id="presence-family" required></select></div>
+        <div><label for="presence-member">Reporting member</label><select id="presence-member" required></select></div>
+        <div><label for="presence-date">Date of stay</label><input id="presence-date" type="date" required></div>
+        <div><label for="family-count">Family members present</label><input id="family-count" type="number" min="0" value="1" required></div>
+        <div><label for="guest-count">Guests present</label><input id="guest-count" type="number" min="0" value="0" required></div>
+      </div>
+      <div class="form-actions"><button class="primary" type="submit">Prepare presence record</button></div>
+      <div id="presence-result" class="result" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section class="section" aria-labelledby="totals-heading">
+    <div class="section-heading">
+      <h2 id="totals-heading">Yearly presence totals</h2>
+      <div><label for="year">Year</label><input id="year" type="number" min="2000" max="2100" style="width:7.5rem"></div>
+    </div>
+    <p class="hint">Totals are people-presences: family members present plus guests, counted once for each recorded date.</p>
+    <div class="table-wrap"><table id="totals"><caption id="totals-caption"></caption><thead><tr><th>Family nucleus</th><th class="numeric">Family members</th><th class="numeric">Guests</th><th class="numeric">Total presences</th></tr></thead><tbody></tbody></table></div>
+  </section>
 </main>
 <script>
-const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-let data,cur=new Date();cur.setDate(1);
-fetch('data.json').then(r=>r.json()).then(d=>{data=d;
-  $('#legend').innerHTML=d.families.map(f=>`<span><i class=dot style="background:${f.color}"></i>${esc(f.name)}</span>`).join('');draw()});
-$('#prev').onclick=()=>{cur.setMonth(cur.getMonth()-1);draw()};
-$('#next').onclick=()=>{cur.setMonth(cur.getMonth()+1);draw()};
-const fam=m=>data.families.find(f=>f.members.includes(m));
-function nights(b,y){let n=0;for(let d=new Date(b.start+'T00:00');fmt(d)<b.end;d.setDate(d.getDate()+1))if(d.getFullYear()==y)n++;return n}
-function draw(){
-  const y=cur.getFullYear(),m=cur.getMonth(),lead=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate();
-  $('#title').textContent=cur.toLocaleDateString(undefined,{month:'long',year:'numeric'});
-  let h=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class=dow>${d}</div>`).join('')+'<div class=cell style="background:var(--bg)"></div>'.repeat(lead);
-  for(let d=1;d<=days;d++){
-    const k=fmt(new Date(y,m,d)),bs=data.bookings.filter(b=>b.start<=k&&k<b.end),used=bs.reduce((s,b)=>s+b.beds,0);
-    h+=`<div class="cell${used>=data.beds?' full':''}"><b>${d}</b>`+bs.map(b=>`<span class=chip title="${esc(b.member)}: ${b.beds} beds" style="background:${fam(b.member).color}">${esc(b.member)} ${b.beds}</span>`).join('')+`<small>${used>=data.beds?'full':data.beds-used+' free'}</small></div>`}
-  $('#grid').innerHTML=h;
-  $('#ctitle').textContent=`Nights booked in ${y}`;
-  let rows='';for(const f of data.families){
-    const per=f.members.map(n=>[n,data.bookings.filter(b=>b.member==n).reduce((s,b)=>s+nights(b,y),0)]);
-    rows+=`<tr><th><i class=dot style="background:${f.color}"></i>${esc(f.name)}</th><th>${per.reduce((s,p)=>s+p[1],0)}</th></tr>`+per.map(p=>`<tr><td>${esc(p[0])}</td><td>${p[1]}</td></tr>`).join('')}
-  $('#counts').innerHTML=rows}
+const $=selector=>document.querySelector(selector);
+const esc=value=>String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+const localDate=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+const parseDate=value=>new Date(`${value}T00:00:00`);
+let data=null,currentMonth=new Date();currentMonth.setDate(1);
+const weekdays=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const familyById=id=>data.families.find(family=>family.id===id);
+const familyOfMember=name=>data.families.find(family=>family.members.includes(name));
+const today=localDate(new Date());
+
+function fillFamilySelect(select,memberSelect){
+  select.innerHTML=data.families.map(family=>`<option value="${esc(family.id)}">${esc(family.name)}</option>`).join("");
+  function updateMembers(){
+    const family=familyById(select.value);
+    memberSelect.innerHTML=family.members.map(member=>`<option value="${esc(member)}">${esc(member)}</option>`).join("");
+    if(select.id==="booking-family")refreshRoomChoices();
+    else $("#family-count").max=family.members.length;
+  }
+  select.addEventListener("change",updateMembers);
+  updateMembers();
+}
+
+function nightsBetween(start,end){
+  const days=[];
+  for(let day=parseDate(start);localDate(day)<end;day.setDate(day.getDate()+1))days.push(localDate(day));
+  return days;
+}
+
+function bookedSpots(roomId,day){
+  return data.bookings.reduce((sum,booking)=>sum+(booking.start<=day&&day<booking.end?(booking.rooms[roomId]||0):0),0);
+}
+
+function availableInRoom(roomId,start,end){
+  const nights=nightsBetween(start,end);
+  if(!nights.length)return 0;
+  const room=data.rooms.find(item=>item.id===roomId);
+  return Math.min(...nights.map(day=>room.spots-bookedSpots(roomId,day)));
+}
+
+function refreshRoomChoices(){
+  const start=$("#arrival").value,end=$("#departure").value;
+  const hasRange=start&&end&&start>=today&&end>start;
+  const count=Math.max(1,Number($("#spot-count").value)||1);
+  $("#availability-note").textContent=hasRange?"Free spots shown are available for the full selected stay.":"Choose an arrival today or later and a later departure date.";
+  let remaining=count;
+  $("#room-choices").innerHTML=data.rooms.map((room,index)=>{
+    const free=hasRange?availableInRoom(room.id,start,end):0;
+    const selected=Math.min(free,remaining);
+    remaining-=selected;
+    const options=Array.from({length:free+1},(_,n)=>`<option value="${n}"${n===selected?" selected":""}>${n}</option>`).join("");
+    return `<div class="room-choice"><label for="room-${esc(room.id)}">${esc(room.name)} <span class="hint">(${free} available)</span></label><select id="room-${esc(room.id)}" data-room="${esc(room.id)}" aria-label="Spots in ${esc(room.name)}">${options}</select></div>`;
+  }).join("");
+  $("#room-choices").querySelectorAll("select").forEach(select=>select.addEventListener("change",updateAllocationTotal));
+  updateAllocationTotal();
+}
+
+function updateAllocationTotal(){
+  const total=[...$("#room-choices").querySelectorAll("select")].reduce((sum,select)=>sum+Number(select.value),0);
+  const requested=Number($("#spot-count").value)||0;
+  $("#allocation-total").textContent=`Selected ${total} of ${requested} requested spot${requested===1?"":"s"}.`;
+}
+
+function makeIssueLink(kind,title,body){
+  const repository=data.repository;
+  if(!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository))throw new Error("The GitHub repository is not configured correctly.");
+  const query=new URLSearchParams({template:`${kind}.md`,labels:kind,title,body});
+  return `https://github.com/${repository}/issues/new?${query.toString()}`;
+}
+
+function showRequestResult(target,summary,link){
+  const whatsapp=`https://wa.me/?text=${encodeURIComponent(`${summary}\n${link}`)}`;
+  target.innerHTML=`<strong>Request ready.</strong> ${esc(summary)}<div class="form-actions"><a class="button primary" href="${esc(link)}" target="_blank" rel="noopener">Open GitHub request</a><a class="button" href="${whatsapp}" target="_blank" rel="noopener">Share in WhatsApp</a></div><p class="hint">GitHub will ask you to sign in. The WhatsApp button opens a prefilled message; it will not send until you choose a chat and confirm.</p>`;
+}
+
+function renderCalendar(){
+  const year=currentMonth.getFullYear(),month=currentMonth.getMonth();
+  $("#month-title").textContent=currentMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const lead=(new Date(year,month,1).getDay()+6)%7,days=new Date(year,month+1,0).getDate();
+  let html=weekdays.map(day=>`<div class="dow" title="${day}">${day.slice(0,3)}</div>`).join("");
+  for(let blank=0;blank<lead;blank++)html+=`<div class="day outside" aria-hidden="true"></div>`;
+  for(let number=1;number<=days;number++){
+    const date=localDate(new Date(year,month,number));
+    const bookings=data.bookings.filter(booking=>booking.start<=date&&date<booking.end);
+    const presences=data.presences.filter(presence=>presence.date===date);
+    const used=bookings.reduce((sum,booking)=>sum+Object.values(booking.rooms).reduce((a,b)=>a+b,0),0);
+    const totalCapacity=data.rooms.reduce((sum,room)=>sum+room.spots,0);
+    const bookingChips=bookings.map(booking=>{
+      const family=familyById(booking.family_id),spots=Object.values(booking.rooms).reduce((a,b)=>a+b,0);
+      const rooms=Object.entries(booking.rooms).map(([id,count])=>`${id}: ${count}`).join(", ");
+      return `<span class="chip" style="background:${family.color}" title="${esc(`${family.name}, ${booking.member}: ${rooms}`)}">${esc(family.name)} · ${spots} spots</span>`;
+    }).join("");
+    const presenceChips=presences.map(presence=>{
+      const family=familyById(presence.family_id),count=presence.members_present+presence.guests;
+      return `<span class="chip" style="background:${family.color}" title="${esc(`${family.name}: ${presence.members_present} family members and ${presence.guests} guests`)}">${esc(family.name)} · ${count} present</span>`;
+    }).join("");
+    const label=`${date}: ${used} of ${totalCapacity} spots booked${presences.length?`, ${presences.length} presence record${presences.length===1?"":"s"}`:""}`;
+    html+=`<div class="day${used>=totalCapacity?" full":""}" role="group" aria-label="${esc(label)}"><span class="day-number">${number}</span>${bookingChips}${presenceChips}<span class="free">${Math.max(0,totalCapacity-used)} spots free</span></div>`;
+  }
+  const trailing=(7-((lead+days)%7))%7;
+  for(let blank=0;blank<trailing;blank++)html+=`<div class="day outside" aria-hidden="true"></div>`;
+  $("#calendar").innerHTML=html;
+}
+
+function renderTotals(){
+  const year=Number($("#year").value)||new Date().getFullYear();
+  const totals=new Map(data.families.map(family=>[family.id,{members:0,guests:0}]));
+  data.presences.filter(presence=>Number(presence.date.slice(0,4))===year).forEach(presence=>{
+    const total=totals.get(presence.family_id);
+    total.members+=presence.members_present;
+    total.guests+=presence.guests;
+  });
+  $("#totals-caption").textContent=`People-presences recorded in ${year}`;
+  $("#totals tbody").innerHTML=data.families.map(family=>{
+    const total=totals.get(family.id);
+    return `<tr><th><i class="dot" style="background:${family.color}"></i>${esc(family.name)}</th><td class="numeric">${total.members}</td><td class="numeric">${total.guests}</td><td class="numeric"><strong>${total.members+total.guests}</strong></td></tr>`;
+  }).join("");
+}
+
+$("#prev").addEventListener("click",()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()});
+$("#next").addEventListener("click",()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()});
+$("#year").value=new Date().getFullYear();
+$("#year").addEventListener("change",renderTotals);
+["arrival","departure","spot-count"].forEach(id=>$("#"+id).addEventListener("input",refreshRoomChoices));
+$("#booking-form").addEventListener("submit",event=>{
+  event.preventDefault();
+  const result=$("#booking-result");result.classList.remove("error");
+  try{
+    const family=familyById($("#booking-family").value),member=$("#booking-member").value;
+    const start=$("#arrival").value,end=$("#departure").value,requested=Number($("#spot-count").value);
+    if(!start||!end||start<today||end<=start)throw new Error("Select an arrival today or later and a departure after arrival.");
+    if(!Number.isInteger(requested)||requested<1)throw new Error("Enter at least one requested spot.");
+    const allocations=[...$("#room-choices").querySelectorAll("select")].filter(select=>Number(select.value)>0).map(select=>[select.dataset.room,Number(select.value)]);
+    if(allocations.reduce((sum,item)=>sum+item[1],0)!==requested)throw new Error("Allocate exactly the requested number of spots across rooms.");
+    const allocationText=allocations.map(([room,count])=>`${room}: ${count}`).join("\n");
+    const body=`### Family nucleus\n\n${family.name}\n\n### Requesting member\n\n${member}\n\n### Arrival date (YYYY-MM-DD)\n\n${start}\n\n### Departure date (YYYY-MM-DD)\n\n${end}\n\n### People-spots requested\n\n${requested}\n\n### Rooms (room-id: spots)\n\n${allocationText}`;
+    const title=`[Booking] ${family.name} · ${start} to ${end}`;
+    const link=makeIssueLink("booking",title,body);
+    showRequestResult(result,`${family.name} requests ${requested} spot${requested===1?"":"s"} from ${start} to ${end}.`,link);
+  }catch(error){result.classList.add("error");result.textContent=error.message}
+});
+$("#presence-family").addEventListener("change",()=>$("#family-count").max=familyById($("#presence-family").value).members.length);
+$("#presence-form").addEventListener("submit",event=>{
+  event.preventDefault();
+  const result=$("#presence-result");result.classList.remove("error");
+  try{
+    const family=familyById($("#presence-family").value),member=$("#presence-member").value;
+    const date=$("#presence-date").value,members=Number($("#family-count").value),guests=Number($("#guest-count").value);
+    if(!date||date>today)throw new Error("Choose today or a past date.");
+    if(data.presences.some(presence=>presence.date===date&&presence.family_id===family.id))throw new Error("A presence is already recorded for this family and date. Contact a repository maintainer if it needs correction.");
+    if(!Number.isInteger(members)||members<0||members>family.members.length)throw new Error(`Enter 0 to ${family.members.length} family members.`);
+    if(!Number.isInteger(guests)||guests<0||members+guests<1)throw new Error("Record at least one family member or guest.");
+    const body=`### Family nucleus\n\n${family.name}\n\n### Reporting member\n\n${member}\n\n### Date (YYYY-MM-DD)\n\n${date}\n\n### Family members present\n\n${members}\n\n### Guests present\n\n${guests}`;
+    const link=makeIssueLink("presence",`[Presence] ${family.name} · ${date}`,body);
+    showRequestResult(result,`${family.name}: ${members} family members and ${guests} guests on ${date}.`,link);
+  }catch(error){result.classList.add("error");result.textContent=error.message}
+});
+
+$("#arrival").min=today;$("#departure").min=today;$("#presence-date").max=today;
+$("#arrival").value=today;
+const weekLater=new Date();weekLater.setDate(weekLater.getDate()+7);$("#departure").value=localDate(weekLater);
+$("#presence-date").value=today;
+fetch("data.json").then(response=>{if(!response.ok)throw new Error(`Calendar data unavailable (${response.status}).`);return response.json()}).then(loaded=>{
+  data=loaded;
+  fillFamilySelect($("#booking-family"),$("#booking-member"));
+  fillFamilySelect($("#presence-family"),$("#presence-member"));
+  $("#legend").innerHTML=data.families.map(family=>`<span><i class="dot" style="background:${family.color}"></i>${esc(family.name)}</span>`).join("");
+  refreshRoomChoices();renderCalendar();renderTotals();
+  $("#load-status").textContent=`Loaded ${data.bookings.length} confirmed bookings and ${data.presences.length} presence records.`;
+}).catch(error=>{$("#load-status").textContent=`Unable to load the calendar: ${error.message}`});
 </script>
+</body>
 </html>

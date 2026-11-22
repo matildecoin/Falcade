@@ -1,23 +1,55 @@
-name: Booking request
-on: {issues: {types: [opened]}}
-permissions: {contents: write, pull-requests: write, issues: write}
+name: Submit calendar request
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 jobs:
-  pr:
-    if: contains(github.event.issue.labels.*.name, 'booking')
+  request:
+    if: contains(github.event.issue.labels.*.name, 'booking') || contains(github.event.issue.labels.*.name, 'presence')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - env:
+      - name: Create a record from the request
+        id: record
+        env:
           BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REQUEST_KIND: ${{ contains(github.event.issue.labels.*.name, 'booking') && 'booking' || 'presence' }}
           GH_TOKEN: ${{ github.token }}
-          N: ${{ github.event.issue.number }}
         run: |
-          f=$(python scripts/issue_to_booking.py)
-          if ! out=$(python scripts/build.py --check 2>&1); then
-            gh issue comment $N --body "Request not possible: $out"
-            gh issue close $N; exit 0
+          if ! file=$(python scripts/issue_to_booking.py); then
+            gh issue comment "$ISSUE_NUMBER" --body "I couldn't read this request. Please reopen it from the calendar so its fields are complete."
+            gh issue close "$ISSUE_NUMBER"
+            exit 0
           fi
-          git config user.name github-actions; git config user.email actions@github.com
-          git checkout -b booking-$N; git add "$f"; git commit -m "Booking request #$N"
-          git push origin booking-$N
-          gh pr create --base main --head booking-$N --title "Booking: $(basename $f .json)" --body "Requested in #$N. Approve to confirm the beds."
+          if ! errors=$(python scripts/build.py --check 2>&1); then
+            gh issue comment "$ISSUE_NUMBER" --body "This request could not be added: $errors"
+            rm "$file"
+            gh issue close "$ISSUE_NUMBER"
+            exit 0
+          fi
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+      - name: Open a review pull request
+        if: steps.record.outputs.file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REQUEST_KIND: ${{ contains(github.event.issue.labels.*.name, 'booking') && 'booking' || 'presence' }}
+          REQUEST_FILE: ${{ steps.record.outputs.file }}
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git checkout -b "$REQUEST_KIND-$ISSUE_NUMBER"
+          git add "$REQUEST_FILE"
+          git commit -m "$REQUEST_KIND request #$ISSUE_NUMBER"
+          git push origin "$REQUEST_KIND-$ISSUE_NUMBER"
+          if [ "$REQUEST_KIND" = "booking" ]; then
+            body="Booking request from #$ISSUE_NUMBER. It is accepted only after one configured reviewer from each family approves. The calendar-guard status must pass before merging."
+          else
+            body="Presence record from #$ISSUE_NUMBER. Check the date and counts, then merge to include it in the yearly totals."
+          fi
+          pr_url=$(gh pr create --base main --head "$REQUEST_KIND-$ISSUE_NUMBER" --title "$REQUEST_KIND request #$ISSUE_NUMBER" --body "$body")
+          gh issue comment "$ISSUE_NUMBER" --body "Review the proposed calendar update: $pr_url"
